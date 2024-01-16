@@ -1,0 +1,78 @@
+from pyspark.sql import SparkSession
+
+#create a session on local master
+spark=SparkSession.builder\
+                  .appName("PostgreSQL TO dataframe USING jdbc Connection")\
+                  .master("local[4]")\
+                  .config("spark.jars","c:\\Users\\Admin\\Downloads\\postgresql-42.7.1.jar")\
+                  .getOrCreate()
+
+table_list = ["actor", "film", "film_actor", "inventory", "customer", "rental", "payment"]
+
+reader = (spark.read.format("jdbc")\
+        .option("url", "jdbc:postgresql://localhost:5432/Lowes") \
+        .option("user", "postgres") \
+        .option("driver", "org.postgresql.Driver")\
+        .option("password", "password") \
+        .option("database","Lowes") \
+        )
+
+for table in table_list:
+        reader.option("dbtable", table).load().createOrReplaceTempView(table)
+
+# spark.sql("""
+# select distinct(last_name) from actor
+# """).show()
+
+
+# spark.sql("""
+# select ac.first_name, ac.last_name from ((actor ac inner join film_actor fa on ac.actor_id = fa.actor_id )
+#           inner join film f on fa.film_id = f.film_id) where f.title = 'ACADEMY DINOSAUR'
+# """).show()
+
+
+# spark.sql("""
+# select count(*) from film as f join inventory as i on f.film_id = i.film_id where f.title = 'HUNCHBACK IMPOSSIBLE'
+#         """).show()
+
+
+spark.sql("""
+select c.first_name, c.last_name,  sum(p.amount) from ((customer c inner join rental r on c.customer_id = r.customer_id) 
+          inner join payment p on p.rental_id = r.rental_id) group by c.first_name
+""").show()
+    
+
+# actorDf=spark.read.format("jdbc")\
+#         .options(url=postresql_url,
+#                 database=database,
+#                 dbtable=dbtable,
+#                 user=user,
+#                 driver="org.postgresql.Driver",
+#                 password="password")\
+#         .load() 
+# actorView = actorDf.createOrReplaceTempView();
+
+# filmDF = spark.read.format("jdbc")\
+#         .options(url=postresql_url,
+#                 database=database,
+#                 dbtable="film",
+#                 user=user,
+#                 driver="org.postgresql.Driver",
+#                 password="password")\
+#         .load()
+
+# filmActorDf = spark.read.format("jdbc")\
+#         .options(url=postresql_url,
+#                 database=database,
+#                 dbtable="film_actor",
+#                 user=user,
+#                 driver="org.postgresql.Driver",
+#                 password="password")\
+#         .load()  
+
+
+# actorDf.printSchema()
+# actorDf.show()
+# actorDf.select("last_name").distinct().show()
+
+# filmDF.printSchema()

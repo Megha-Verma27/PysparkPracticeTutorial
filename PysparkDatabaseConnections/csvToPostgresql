@@ -1,0 +1,47 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql.functions import col
+
+if __name__ == "__main__":
+    spark = SparkSession.builder \
+    .appName("Db2-Postgres-Pipeline") \
+    .config("spark.jars", "J:\\Jars\\postgresql-42.7.1.jar,J:\\Jars\\db2jcc-db2jcc4.jar")\
+    .getOrCreate()
+
+  
+
+    db2_properties = {
+    "driver": "com.ibm.db2.jcc.DB2Driver",
+    "url": "jdbc:db2://localhost:50001/lowes",
+    "user": "db2inst1",
+    "password": "password"
+    }
+
+    postgres_properties={
+    "driver": "org.postgresql.Driver",
+    "url": "jdbc:postgresql://localhost:5555/target_database",
+    "user": "postgres",
+    "password": "postgres"
+    }
+
+    db2_data = spark.read.jdbc(url=db2_properties["url"],
+                           table="actor",
+                           properties=db2_properties)
+    
+    db2_data.show()
+
+    # filtered_df = db2_data.filter(col('first_name').startswith('A'))
+    filtered_df=db2_data
+    # print(filtered_df.count())
+
+    filtered_df.select("first_name","last_name").write\
+    .mode("overwrite")\
+    .jdbc(url=postgres_properties["url"],
+                           table="filtered_names",
+                           properties=postgres_properties)
+   
+    
+    print("Write Done")
+
+
+

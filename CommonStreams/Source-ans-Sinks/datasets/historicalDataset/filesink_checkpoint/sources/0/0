@@ -1,0 +1,4 @@
+v1
+{"path":"file:///C:/CommonStreams/Source-ans-Sinks/datasets/historicalDataset/dropLocation/historical_data_1.csv","timestamp":1704543712000,"batchId":0}
+{"path":"file:///C:/CommonStreams/Source-ans-Sinks/datasets/historicalDataset/dropLocation/historical_data_2.csv","timestamp":1704543712000,"batchId":0}
+{"path":"file:///C:/CommonStreams/Source-ans-Sinks/datasets/historicalDataset/dropLocation/historical_data_3.csv","timestamp":1704543712000,"batchId":0}
